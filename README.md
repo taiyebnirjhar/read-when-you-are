@@ -10,7 +10,7 @@ _A beautiful web experience inspired by a real-life Quranic Jar._
 
 ![Inspiration](./inspiration-screenshot.png)
 
-Saw a Facebook post: a physical jar filled with colorful paper slips. Each slip held a comforting verse from the Quran. The jar said:
+Saw This Facebook product ads: a physical jar filled with colorful paper slips. Each slip held a comforting verse from the Quran. The jar said:
 **"Read when you are... lost, sad, lonely..."**
 Each emotion was tied to a color—prompting you to pick a matching note.
 
