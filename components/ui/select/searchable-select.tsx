@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import {
@@ -95,8 +94,8 @@ export function SearchableSelectItem({
     (typeof children === "string"
       ? children
       : typeof value === "string"
-        ? value
-        : "");
+      ? value
+      : "");
   return (
     <CommandItem
       value={filterValue}
