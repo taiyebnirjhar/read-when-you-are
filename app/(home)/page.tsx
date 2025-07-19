@@ -18,15 +18,47 @@ export default function QuranInspirationApp() {
     return emotion.verses[randomIndex];
   };
 
-  const handleEmotionClick = (emotion: Emotion) => {
-    setSelectedEmotion(emotion);
-    setCurrentVerse(getRandomVerse(emotion));
-    setIsOpen(true);
+  const handleEmotionClick = async (emotion: Emotion) => {
+    const verse = getRandomVerse(emotion);
+    const data = await fetchVerseData(verse.surahNo!, verse.ayahNo!);
+    if (data) {
+      setSelectedEmotion(emotion);
+      setCurrentVerse({
+        ...verse,
+        verse: data.english,
+        arabicVerse: data.arabic1,
+        bengali: data.bengali,
+        audioData: data,
+      });
+      setIsOpen(true);
+    }
+  };
+  const handleNewVerse = async () => {
+    if (selectedEmotion) {
+      const verse = getRandomVerse(selectedEmotion);
+      const data = await fetchVerseData(verse.surahNo!, verse.ayahNo!);
+      if (data) {
+        setCurrentVerse({
+          ...verse,
+          verse: data.english,
+          arabicVerse: data.arabic1,
+          bengali: data.bengali,
+          audioData: data,
+        });
+      }
+    }
   };
 
-  const handleNewVerse = () => {
-    if (selectedEmotion) {
-      setCurrentVerse(getRandomVerse(selectedEmotion));
+  const fetchVerseData = async (surahNo: number, ayahNo: number) => {
+    try {
+      const res = await fetch(
+        `https://quranapi.pages.dev/api/${surahNo}/${ayahNo}.json`
+      );
+      if (!res.ok) throw new Error("Failed to fetch");
+      return await res.json();
+    } catch (err) {
+      // console.error(err);
+      return null;
     }
   };
 
@@ -36,6 +68,19 @@ export default function QuranInspirationApp() {
       setSelectedEmotion(null);
       setCurrentVerse(null);
     }, 300);
+  };
+
+  const fetchAudioData = async (surahNo: number, ayahNo: number) => {
+    try {
+      const res = await fetch(
+        `https://quranapi.pages.dev/api/${surahNo}/${ayahNo}.json`
+      );
+      if (!res.ok) throw new Error("Failed to fetch audio");
+      return await res.json();
+    } catch (err) {
+      // console.error(err);
+      return null;
+    }
   };
 
   return (

@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { RefreshCw } from "lucide-react";
 import { Emotion, Verse } from "../../_types";
+import { useEffect, useRef, useState } from "react";
 
 interface QuoteModalProps {
   isOpen: boolean;
@@ -27,10 +28,120 @@ export default function QuoteModal({
   closeModal,
   handleNewVerse,
 }: QuoteModalProps) {
+  const [activeReciter, setActiveReciter] = useState<string | null>(null);
+  const [loadingAudio, setLoadingAudio] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Stop audio on any condition
+  const stopAudio = () => {
+    // console.log("stopAudio called. audioRef.current:", audioRef.current);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0; // Reset time
+      // Important: Remove event listeners to prevent memory leaks and unexpected behavior
+      audioRef.current.oncanplaythrough = null;
+      audioRef.current.onended = null;
+      audioRef.current.onerror = null;
+      audioRef.current = null; // Clear the ref
+      // console.log("Audio paused and ref cleared.");
+    }
+    setIsPlaying(false);
+    setActiveReciter(null);
+    setLoadingAudio(false); // Ensure loading is off when stopped
+  };
+
+  // Stop audio on modal close or unmount
+  useEffect(() => {
+    // console.log("useEffect [isOpen] fired. isOpen:", isOpen);
+    if (!isOpen) {
+      // console.log("Modal closing, stopping audio.");
+      stopAudio();
+    }
+    // Cleanup function: This runs when the component unmounts or before the effect re-runs
+    return () => {
+      // console.log("useEffect [isOpen] cleanup: stopping audio.");
+      stopAudio();
+    };
+  }, [isOpen]);
+
+  // Stop audio when verse changes
+  useEffect(() => {
+    // console.log(
+    //   "useEffect [currentVerse] fired. currentVerse:",
+    //   currentVerse?.reference
+    // );
+    // Only stop if a verse was previously playing, not on initial load
+    if (audioRef.current) {
+      // console.log("Verse changed, stopping current audio.");
+      stopAudio();
+    }
+  }, [currentVerse]);
+
+  const handleReciterClick = (id: string, url: string) => {
+    // console.log("handleReciterClick called. ID:", id, "URL:", url);
+    if (activeReciter === id && isPlaying) {
+      // console.log("Clicking on currently playing reciter, pausing.");
+      stopAudio(); // If it's the same reciter and playing, just pause it
+      return;
+    }
+
+    // console.log("Stopping existing audio before playing new reciter.");
+    stopAudio(); // Always stop before trying to play a new one
+
+    setLoadingAudio(true);
+    setActiveReciter(id);
+    setIsPlaying(false); // Set to false initially, will be true on play
+
+    const newAudio = new Audio(url);
+    audioRef.current = newAudio; // Assign the new audio instance to the ref
+
+    newAudio.oncanplaythrough = () => {
+      // console.log("Audio can play through. URL:", url);
+      setLoadingAudio(false);
+      newAudio.play().catch((e) => {
+        // console.error("Audio play failed:", e);
+        // Handle cases where play() is interrupted by user gesture requirements
+        // or other browser policy issues.
+        alert("Error playing audio. Please try again.");
+        stopAudio(); // Stop if play fails
+      });
+      setIsPlaying(true);
+    };
+
+    newAudio.onended = () => {
+      // console.log("Audio ended. Stopping audio.");
+      stopAudio();
+    };
+
+    newAudio.onerror = (e) => {
+      // console.error("Audio error:", e);
+      alert("Error playing audio.");
+      stopAudio(); // Ensure cleanup on error
+    };
+  };
+
+  const handlePause = () => {
+    // console.log("handlePause called.");
+    stopAudio();
+  };
+
+  const handleAnotherVerseClick = () => {
+    // console.log("handleAnotherVerseClick called.");
+    stopAudio();
+    handleNewVerse();
+  };
+
+  const handleClose = () => {
+    // console.log("handleClose (modal) called.");
+    stopAudio();
+    closeModal();
+  };
+
   return (
     <AnimatePresence>
       {isOpen && selectedEmotion && currentVerse && (
-        <Dialog open={isOpen} onOpenChange={closeModal}>
+        <Dialog open={isOpen} onOpenChange={handleClose}>
           <DialogContent
             className={cn(
               "max-w-4xl border-0 p-0 shadow-2xl max-h-[90vh] overflow-y-auto",
@@ -84,6 +195,20 @@ export default function QuoteModal({
                     </p>
                   </motion.div>
 
+                  {/* Bengali Translation */}
+                  {currentVerse.bengali && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.25 }}
+                      className="font-medium text-center"
+                    >
+                      <p className="text-sm sm:text-base text-white/80 leading-relaxed">
+                        {currentVerse.bengali}
+                      </p>
+                    </motion.div>
+                  )}
+
                   {/* Reference */}
                   <motion.div
                     key={`reference-${currentVerse.reference}`}
@@ -97,22 +222,61 @@ export default function QuoteModal({
                     </p>
                   </motion.div>
 
-                  {/* Action Buttons */}
+                  {/* Reciter Buttons */}
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {Object.entries(currentVerse.audioData?.audio || {}).map(
+                      ([id, reciterData]) => (
+                        <button
+                          key={id}
+                          onClick={() =>
+                            handleReciterClick(id, reciterData.url)
+                          }
+                          className={`text-sm px-3 py-1 rounded border transition-all duration-200
+                            ${
+                              activeReciter === id && isPlaying
+                                ? "bg-white text-black font-semibold"
+                                : "bg-white/10 text-white border-white/20 hover:bg-white/20"
+                            }`}
+                        >
+                          {reciterData.reciter}
+                        </button>
+                      )
+                    )}
+                  </div>
+
+                  {/* Pause Button */}
+                  {isPlaying && (
+                    <div className="text-center mt-2">
+                      <button
+                        onClick={handlePause}
+                        className="text-xs text-white/80 hover:text-white underline"
+                      >
+                        {loadingAudio ? "Loading..." : "Pause Recitation"}
+                      </button>
+                    </div>
+                  )}
+                  {loadingAudio && !isPlaying && (
+                    <div className="text-center mt-2 text-xs text-white/70">
+                      Loading Audio...
+                    </div>
+                  )}
+
+                  {/* Another Verse Button */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="flex flex-col  gap-3 pt-4"
+                    className="flex flex-col gap-3 pt-4"
                   >
                     <Button
-                      onClick={handleNewVerse}
+                      onClick={handleAnotherVerseClick}
                       variant="ghost"
                       className="flex-1 text-white hover:text-white hover:bg-transparent border border-white/30 hover:border-white/90 transition-all duration-200"
                     >
                       <RefreshCw className="h-4 w-4 mr-2" />
                       Another verse
                     </Button>
-                    <div className="text-center ">
+                    <div className="text-center">
                       <p className="text-xs text-white/70 px-3 py-2">
                         {selectedEmotion.verses.length} verses available
                       </p>
