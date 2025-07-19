@@ -156,7 +156,7 @@ export default function QuoteModal({
               className={`relative overflow-hidden rounded-lg ${selectedEmotion.bgColor}`}
             >
               <div className="absolute inset-0 bg-black/10" />
-              <div className="relative p-6 sm:p-8 h-full">
+              <div className="relative p-6 sm:p-8 h-full overflow-y-auto">
                 <div className="h-full flex  justify-center items-center">
                   <div>
                     <DialogHeader className="mb-6">
