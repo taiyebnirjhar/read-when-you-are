@@ -85,11 +85,3 @@ Let this be your **digital Quran Jar.**
 ## 📸 Credit
 
 The original idea came from a **Facebook post** (screenshot included above) that emotionally resonated.
-
----
-
-## 🌐 Live Demo
-
-Coming soon...
-
----
