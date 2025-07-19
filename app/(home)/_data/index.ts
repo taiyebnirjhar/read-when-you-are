@@ -5,7 +5,8 @@ const emotions: Emotion[] = [
     id: "happy",
     name: "Happy",
     color: "bg-yellow-400",
-    bgColor: "bg-gradient-to-br from-yellow-400 to-yellow-500",
+
+    bgColor: "bg-gradient-to-br from-yellow-400 to-yellow-700",
     textColor: "text-yellow-900",
     verses: [
       {
@@ -182,7 +183,7 @@ const emotions: Emotion[] = [
     id: "anxious",
     name: "Anxious",
     color: "bg-green-500",
-    bgColor: "bg-gradient-to-br from-green-500 to-green-600",
+    bgColor: "bg-gradient-to-br from-green-500 to-green-800",
     textColor: "text-green-900",
     verses: [
       {
@@ -347,7 +348,7 @@ const emotions: Emotion[] = [
     id: "thankful",
     name: "Thankful",
     color: "bg-orange-400",
-    bgColor: "bg-gradient-to-br from-orange-400 to-orange-500",
+    bgColor: "bg-gradient-to-br from-orange-400 to-orange-700",
     textColor: "text-orange-900",
     verses: [
       {
@@ -521,7 +522,7 @@ const emotions: Emotion[] = [
     id: "lonely",
     name: "Lonely",
     color: "bg-blue-500",
-    bgColor: "bg-gradient-to-br from-blue-500 to-blue-600",
+    bgColor: "bg-gradient-to-br from-blue-500 to-blue-900",
     textColor: "text-blue-900",
     verses: [
       {
@@ -691,7 +692,7 @@ const emotions: Emotion[] = [
     id: "angry",
     name: "Angry",
     color: "bg-red-500",
-    bgColor: "bg-gradient-to-br from-red-500 to-red-600",
+    bgColor: "bg-gradient-to-br from-red-500 to-red-700",
     textColor: "text-red-900",
     verses: [
       {
@@ -865,7 +866,7 @@ const emotions: Emotion[] = [
     id: "sad",
     name: "Sad",
     color: "bg-purple-500",
-    bgColor: "bg-gradient-to-br from-purple-500 to-purple-600",
+    bgColor: "bg-gradient-to-br from-purple-500 to-purple-700",
     textColor: "text-purple-900",
     verses: [
       {
