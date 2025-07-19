@@ -144,7 +144,7 @@ export default function QuoteModal({
         <Dialog open={isOpen} onOpenChange={handleClose}>
           <DialogContent
             className={cn(
-              "max-w-4xl border-0 p-0 shadow-2xl h-screen lg:h-auto lg:max-h-[90vh] overflow-y-auto",
+              "max-w-4xl border-0 p-0 shadow-2xl h-screen lg:h-auto lg:max-h-[90vh] overflow-y-auto overflow-x-hidden lg:overflow-hidden ",
               selectedEmotion.bgColor
             )}
           >
@@ -153,11 +153,11 @@ export default function QuoteModal({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className={`relative overflow-hidden rounded-lg ${selectedEmotion.bgColor}`}
+              className={`relative rounded-lg ${selectedEmotion.bgColor}`}
             >
               <div className="absolute inset-0 bg-black/10" />
-              <div className="relative p-6 sm:p-8 h-full overflow-y-auto">
-                <div className="h-full flex  justify-center items-center">
+              <div className="relative p-6 sm:p-8 h-full">
+                <div className="h-full  flex  justify-center items-center">
                   <div>
                     <DialogHeader className="mb-6">
                       <DialogTitle className="text-xl font-bold text-white sm:text-2xl text-center">
