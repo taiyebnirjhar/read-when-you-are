@@ -155,7 +155,7 @@ export default function QuoteModal({
               transition={{ duration: 0.2 }}
               className={`relative rounded-lg `}
             >
-              <div className="relative p-16  h-full">
+              <div className="relative px-4 py-16  h-full">
                 <div className="h-full flex justify-center items-center">
                   <div>
                     <DialogHeader className="mb-6">
